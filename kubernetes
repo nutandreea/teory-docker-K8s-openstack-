@@ -1,0 +1,153 @@
+kubectl get namespaces
+kubectl get pods --namespace=openstack (or spire or vault) 
+
+Kubernetes Overview(k8s)
+Open source product , most popular container orchestration
+Container + Orchestration
+Containers: docker is the most popular 
+Docker: libraries +dependencies are running separately .Are completely isolated environments. They share the same OS kernel.
+#docker run <nameofdocker>
+Image is a package or a template(it is used to install one or more containers).
+Dockers are images that are isolated and they have their own environment and set of processes.
+Components:
+a)API Server - acts as a front end for kubernetes, users , management devices all talk with API server to interact with cbernetes cluster
+b)Etcd key value store to store all data used to manage the cluster, etcd data store information about all nodes in a distributed manner, implementing logs within the cluster to ensure there are no  conflicts between the masters
+c)Kubelet agent to run inside each node in the cluster(containers are running on the node as expected)
+d)Container Runtime underling software to run containers(docker)
+e)Controller brain behind orchestration
+f)Scheduler distributing work or containers across multiple nodes, it looks for newly created containers and assigns them to nodes
+
+Worker node 
+Container Runtime (docker as an engine)-running applications
+Kubelet agent responsible to interact with the master to provide health information to the master about the worker node
+Master Node
+Kube-apiserver(this is what makes it a master)
+Etcd(key vakue store) all the information gathered 
+Controller
+Scheduller
+Kubectl - deploy and manage applications in the cluster
+Kubectl get nodes
+Kubectl cluster-info
+Kubectl run
+To run Kubernetes in Local Environment
+-> minikube
+Permanent kubernetes cluster on the cloud
+-> Google Container Engine(GKE) 
+Multi-node Kubernetes cluster in local environment
+-> kubeadm
+Install minikube
+Install kubectl
+Install a hypervisor(eg virtual Box)
+Minikube status 
+	Ø Kubectl get deployments
+          kubectl get pods
+Pod a single instance of an application, they can have multiple containers
+kubectl run nginx --image=nginx ( create a pod using an image)
+Kubectl get pods -o wide
+Kubectl create -f pod-definition.yml
+-> kubectl get nodes (how many nodes are in a cluster)
+-> kubectl get nodes -o wide
+kubectl describe pod newpods-<id>(to check he image that was used to create a pod)
+->kubectl describe pod nameodpod | grep -i image
+Get all pods from webapp
+Kubectl get pods webapp (1/2 , 2 containers running in that pod)
+Kubectl apply -f pod.yaml
+Kubectl edit pod redis(podname)
+Controllers are the brain behind kubernetes
+Replication controller
+Kubectl get replicationcontroller
+Kubectl create -f rc-definition.yml
+Replica set is a process that monitor the pod and in case one of them is failing to deploy a new one.
+Kubectl replace -f replicaset-definition.yml
+Kubectl scale --replicas=6 -f replicaset-definition.yml(without having to modify the replicaset)
+Kubectl create -f replicaset-definition.yml
+Kubectl get replicaset
+Kubectl delete replicaset myapp-replicaset
+Kubectl replace -f replicaset-definition.yml
+Kubectl describe replicaset myapp-replicaset
+Kubectl get replicasets.apps _ to get replica sets
+Kubectl apply -f replicaset-definition.yml
+Kubectl describe deployments.apps frontend-deployment | grep -I image
+Kubectl get deployment /kubectl get deployments
+Kubect get pods
+Kubectl get namespaces
+See ~/ .kube/config file
+Kubectl config get-contexts
+Kubectl config set*
+systemctl status kubelet  (systemctl restart kubelet)
+kubectl get pods --show labels -n vault
+kubectl get pods - A | grep horizon
+for i in  `kubectl get pods -A -w | grep -ViE 'Running' awk "{print $2}"; do kubectl -n openstack delete pod 
+kubectl get pods --show label 
+kubectl get ingress -n openstack
+kubectl -n openstack exec -it <NameOfPOD>
+
+
+
+Create a service inside the"deployments" and then create service-definition.yml
+Kubectl get svc
+ minicube service myapp-service --url (to print the url where the service is accessible)
+You define some properties like apiVersion , kind, metadata, spec
+Load balancer type: for IP and port combination  
+To get details: kubectl describe service 
+To check how many deployments : kubectl get deployment
+What is the image used to create pods in deployment: kubectl describe deployment
+When you change a service definition.yaml then you need to run kubectl apply -f /root/service-definition-1.yaml
+Example voting app:
+1.deploy Containers
+2.enable Connectivity
+3.external access
+Steps:
+-deploy PODS(or replica set)
+-enable connectivity between the services
+Helm repo list
+Helm repo update
+Helm create hooktest
+Service mesh -new layer in distributed app traffic for better control, security and monitoring
+By default pods are only accesible on their internal IP address which has no access from outside the cluster you need to run kubectl expose depoyment hello-minikube --type=NodePort service/hello-minikube exposed.Exposing a deployment creates a Jubernetes service .We can view the servcie with (kubectl get services)Pods is the smallest building block .whitin a cluster a pod represents a process that's running/Inside of pod we can have one or more containers.
+Volumes provide a way for the containers to communicate during the pod's life.
+ReplicaSets is one of the Kubernetes Controllers that ensures a specified number of pod replicas are running in a given time.Without ReplicaSet we would have to create multiple manifests for the number of pods needed. Label Selectors is used to identify a set of objects in Kubernetes.
+DaemonsSets ensure that some or all your k8s nodes run a copy of a pod which allows you to run a daemon on every node.
+When you add a new node to the cluster a pod gets added to match the nodes.
+Types  of K8S services: a) ClusterIP (you can reach the service only from within the cluster) b) Node Port a cluster IP service is created automatically and the Node Port service will route to it.From outside the cluster you can contact the Node Port service by using <NodeIP>:<NodePort>; c) LoadBalancer (the external load balancer router to your NodePort and ClusterIp services which are created automatically. d) externalName this type maps the service to the contents of the externalName field.It does this by returning a value for the CNAME record
+ to get all the pods in the default namesystem : kubectl get all -n kube-system  kubectl get pods --all-namespaces or  kubectl get pods --all-namespaces Kubelet is the primary node agent that runs on each node
+
+Replicaset is managing the replicas of a Pod
+To log in to a pod : kubectl exec -it [pod name] --bin/bash  
+Create deployment : kubectl create deployment <deploymentName> -- image=nginx(for example)
+vir to log in to a POD
+kubetail 'neutron-api' -e regex -c neutron-api --since 20m -n openstack
+kubectl -n openstack get pod -A -o wide | grep libvirt -check libvirt pods
+kubectl -n openstack logs <eg neutron> | jq '.' ^C
+kubectl -n openstack get pods | grep <pod name>
+kubectl -n openstack get pods  grep <eg neutrion> | awk '{print $1}'
+for i in 'kubectl -n openstack get pods | grep neutron-compute-sriov | awk '{print $1} '`; do kubectl <pod name> deleted
+for pod in $(kubectl -n openstack get pods -o wide | grep sriov | grep agent | grep -v openvswitch | awk {print $1} ') do kubectl -n openstack log $pod | grep <ID>; done
+kubectl -n openstack logs <pod that you are interested in>  grep <Port id> | jq '.message'
+kubectl exec nameof pod  -i -t --bash
+
+
+
+ 
+
+
+
+kubectl get pods --field-selector=status.phase=Running -get running podscd 
+Namespaces : virtual cluster , has its onws set of resources 
+ kubectl get pods --all-namespaces -o wide -get all pods with more details 
+From Course:
+Imperative:
+Ø kubectl run --image=nginx nginx
+	Ø kubectl create deployment --image=nginx nginx
+	Ø kubectl expose depoyment nginx --port 80
+	Ø kubectl edit deployment nginx
+	Ø kubectl scale deployment nginx --replicas =5
+	Ø kubectl set image deployment nginx nginx=nginx:1.18
+	Ø kubectl create -f nginx.yaml
+	Ø kubectl replace -f nginx.yaml
+	Ø kubectl delete -f nginx.yaml
+Declarative:
+
+kubectl  -n openstack get pods -o wide  | grep hypervizor
+openstack compute service list
+
